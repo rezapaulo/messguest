@@ -1,0 +1,65 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        (request.auth.token.email.lower() == "aris.masdian@ppa.co.id") ||
+        (request.auth.token.email.lower() == "admin@messguest.local") ||
+        (isVerified() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+      );
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // ===============================================================
+    // Collection Rules
+    // ===============================================================
+
+    match /users/{uid} {
+      allow read: if isSignedIn() && (isOwner(uid) || isAdmin());
+      allow write: if isSignedIn() && (isOwner(uid) || isAdmin());
+    }
+
+    match /rooms/{roomId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /submissions/{submissionId} {
+      // Allow public read and list for Guest Statement flow
+      allow read, list: if true; 
+      allow create: if isSignedIn();
+      allow update: if true; // Allow guests to accept statements and update estimated time
+      allow delete: if isAdmin();
+    }
+
+    match /ppe_borrowings/{borrowId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /_system_/{docId} {
+      allow read: if isSignedIn();
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

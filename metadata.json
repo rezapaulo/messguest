@@ -1,0 +1,8 @@
+{
+  "name": "MessGuest - Guest Management System",
+  "description": "A comprehensive web application for managing guest house (mess) bookings, approvals, and room occupancy with real-time monitoring and role-based access.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [],
+  "C7": [],
+  "aq": []
+}

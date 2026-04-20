@@ -1,0 +1,94 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "System user profile",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["admin", "user"] },
+        "displayName": { "type": "string" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Room": {
+      "title": "Room",
+      "description": "Mess room information",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "number": { "type": "string" },
+        "status": { "type": "string", "enum": ["available", "occupied"] },
+        "capacity": { "type": "number" }
+      },
+      "required": ["number", "status", "capacity"]
+    },
+    "Submission": {
+      "title": "Submission",
+      "description": "Guest stay application",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userUid": { "type": "string" },
+        "guestName": { "type": "string" },
+        "guestNames": { "type": "array", "items": { "type": "string" } },
+        "company": { "type": "string" },
+        "checkInDate": { "type": "string", "format": "date-time" },
+        "checkOutDate": { "type": "string", "format": "date-time" },
+        "guestCount": { "type": "number" },
+        "purpose": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected", "checked-in", "checked-out"] },
+        "roomId": { "type": "string" },
+        "statementAccepted": { "type": "boolean" },
+        "statementAcceptedAt": { "type": "string", "format": "date-time" },
+        "actualCheckInTime": { "type": "string", "format": "date-time" },
+        "actualCheckOutTime": { "type": "string", "format": "date-time" },
+        "condition": { "type": "string" },
+        "checkOutNotes": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "roomType": { "type": "string", "enum": ["Kamar Single (1 Orang)", "Double (2 Orang)", "Family (4 Orang)"] },
+        "assignmentLetterUrl": { "type": "string" }
+      },
+      "required": ["userUid", "checkInDate", "checkOutDate", "guestCount", "status"]
+    },
+    "PPEBorrowing": {
+      "title": "PPE Borrowing",
+      "description": "Guest PPE (APD) borrowing record",
+      "type": "object",
+      "properties": {
+        "borrowCode": { "type": "string" },
+        "submissionId": { "type": "string" },
+        "guestName": { "type": "string" },
+        "roomNumber": { "type": "string" },
+        "items": { "type": "array", "items": { "type": "string" } },
+        "borrowedAt": { "type": "string", "format": "date-time" },
+        "expectedReturnAt": { "type": "string", "format": "date-time" },
+        "actualReturnedAt": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["borrowed", "returned", "late"] },
+        "idCardImageUrl": { "type": "string" },
+        "notes": { "type": "string" },
+        "createdBy": { "type": "string" }
+      },
+      "required": ["submissionId", "guestName", "items", "borrowedAt", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/rooms/{roomId}": {
+      "schema": "Room",
+      "description": "Room inventory"
+    },
+    "/submissions/{submissionId}": {
+      "schema": "Submission",
+      "description": "Guest stay submissions"
+    },
+    "/ppe_borrowings/{borrowId}": {
+      "schema": "PPEBorrowing",
+      "description": "PPE borrowings for guests"
+    }
+  }
+}
